@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>welcome_banner</key>
+        <value>Добро пожаловать в Filmi from Nikitka</value>
+    </entry>
+    <entry>
+        <key>experimental_profile_enabled</key>
+        <value>true</value>
+    </entry>
+</defaultsMap>
