@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">semka_6sem</string>
+    <string name="habits_title">Привычки</string>
+    <string name="add_habit">Добавить</string>
+    <string name="habit_name">Название привычки</string>
+    <string name="save">Сохранить</string>
+    <string name="empty_habits">Пока нет привычек</string>
+    <string name="streak_days">Серия: %1$d дн.</string>
+    <string name="done_today">Сегодня</string>
+    <string name="settings">Настройки</string>
+    <string name="notifications">Уведомления</string>
+    <string name="reminder_time">Напоминание каждый день в 20:00</string>
+    <string name="yandex_login">Войти через Яндекс</string>
+    <string name="yandex_logout">Выйти из Яндекса</string>
+    <string name="delete_account">Удалить аккаунт</string>
+    <string name="delete_account_confirm">Удалить все данные и выйти?</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отмена</string>
+    <string name="scan_text">Сканировать текст с фото</string>
+    <string name="error_load">Не удалось загрузить</string>
+    <string name="notification_title">Привычки</string>
+    <string name="notification_body">Отметьте привычки за сегодня</string>
+    <string name="logged_in_as">Аккаунт: %1$s</string>
+    <string name="not_logged_in">Не выполнен вход</string>
+    <string name="share_habits">Поделиться списком</string>
+    <string name="build_info">Сборка: %1$s, сервер: %2$s</string>
+    <string name="share_habits_title">Мои привычки</string>
 </resources>

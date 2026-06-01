@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "semka_6sem"
 include(":app")
- 
+include(":domain")
+include(":data")
