@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.sem6lab6.analytics.AnalyticsService
+import com.example.sem6lab6.analytics.CrashReporter
 import com.example.sem6lab6.core.toMovieDuration
 import com.example.sem6lab6.core.toRatingText
 import com.example.sem6lab6.domain.model.Movie
@@ -72,7 +73,8 @@ class MovieViewModel(
     private val deleteMovieUseCase: DeleteMovieUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val toggleWatchedUseCase: ToggleWatchedUseCase,
-    private val analyticsService: AnalyticsService
+    private val analyticsService: AnalyticsService,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
     init {
         analyticsService.trackEvent(
@@ -110,58 +112,79 @@ class MovieViewModel(
         if (title.isBlank() || genre.isBlank() || description.isBlank()) return
 
         viewModelScope.launch {
-            addMovieUseCase(
-                Movie(
-                    id = UUID.randomUUID().toString(),
-                    title = title.trim(),
-                    genre = genre.trim(),
-                    year = parsedYear,
-                    durationMinutes = parsedDuration,
-                    rating = parsedRating,
-                    description = description.trim()
+            try {
+                addMovieUseCase(
+                    Movie(
+                        id = UUID.randomUUID().toString(),
+                        title = title.trim(),
+                        genre = genre.trim(),
+                        year = parsedYear,
+                        durationMinutes = parsedDuration,
+                        rating = parsedRating,
+                        description = description.trim()
+                    )
                 )
-            )
-            analyticsService.trackEvent(
-                name = "movie_added",
-                params = mapOf("movie_title" to title.trim())
-            )
+                analyticsService.trackEvent(
+                    name = "movie_added",
+                    params = mapOf("movie_title" to title.trim())
+                )
+            } catch (error: Exception) {
+                crashReporter.log("addMovie failed title=${title.trim()}")
+                crashReporter.recordException(error)
+            }
         }
     }
 
     fun deleteMovie(movieId: String) {
         viewModelScope.launch {
-            deleteMovieUseCase(movieId)
-            analyticsService.trackEvent(
-                name = "movie_deleted",
-                params = mapOf("movie_id" to movieId)
-            )
+            try {
+                deleteMovieUseCase(movieId)
+                analyticsService.trackEvent(
+                    name = "movie_deleted",
+                    params = mapOf("movie_id" to movieId)
+                )
+            } catch (error: Exception) {
+                crashReporter.log("deleteMovie failed id=$movieId")
+                crashReporter.recordException(error)
+            }
         }
     }
 
     fun onFavoriteClicked(movieId: String) {
         viewModelScope.launch {
-            toggleFavoriteUseCase(movieId)
-            analyticsService.trackEvent(
-                name = "movie_favorited",
-                params = mapOf("movie_id" to movieId)
-            )
+            try {
+                toggleFavoriteUseCase(movieId)
+                analyticsService.trackEvent(
+                    name = "movie_favorited",
+                    params = mapOf("movie_id" to movieId)
+                )
+            } catch (error: Exception) {
+                crashReporter.log("toggleFavorite failed id=$movieId")
+                crashReporter.recordException(error)
+            }
         }
     }
 
     fun onWatchedClicked(movieId: String) {
         viewModelScope.launch {
-            toggleWatchedUseCase(movieId)
-            analyticsService.trackEvent(
-                name = "movie_watched_toggled",
-                params = mapOf("movie_id" to movieId)
-            )
+            try {
+                toggleWatchedUseCase(movieId)
+                analyticsService.trackEvent(
+                    name = "movie_watched_toggled",
+                    params = mapOf("movie_id" to movieId)
+                )
+            } catch (error: Exception) {
+                crashReporter.log("toggleWatched failed id=$movieId")
+                crashReporter.recordException(error)
+            }
         }
     }
 }
 
 class MovieViewModelFactory(
     private val movieRepository: MovieRepository,
-    private val analyticsService: AnalyticsService
+    private val analyticsService: AnalyticsService,
+    private val crashReporter: CrashReporter
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val observeMoviesUseCase = ObserveMoviesUseCase(movieRepository)
@@ -178,7 +201,8 @@ class MovieViewModelFactory(
             deleteMovieUseCase = deleteMovieUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             toggleWatchedUseCase = toggleWatchedUseCase,
-            analyticsService = analyticsService
+            analyticsService = analyticsService,
+            crashReporter = crashReporter
         ) as T
     }
 }

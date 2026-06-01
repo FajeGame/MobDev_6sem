@@ -2,6 +2,7 @@ package com.example.sem6lab6.ui.movies
 
 import com.example.sem6lab6.MainDispatcherRule
 import com.example.sem6lab6.analytics.FakeAnalyticsService
+import com.example.sem6lab6.analytics.FakeCrashReporter
 import com.example.sem6lab6.data.InMemoryMovieRepository
 import com.example.sem6lab6.domain.usecase.AddMovieUseCase
 import com.example.sem6lab6.domain.usecase.DeleteMovieUseCase
@@ -55,7 +56,8 @@ class MovieViewModelTest {
             deleteMovieUseCase = DeleteMovieUseCase(repository),
             toggleFavoriteUseCase = ToggleFavoriteUseCase(repository),
             toggleWatchedUseCase = ToggleWatchedUseCase(repository),
-            analyticsService = analytics
+            analyticsService = analytics,
+            crashReporter = FakeCrashReporter()
         )
     }
 }

@@ -25,7 +25,8 @@ import com.example.sem6lab6.about.AboutScreen
 import com.example.sem6lab6.login.LoginScreen
 import com.example.sem6lab6.login.LoginViewModel
 import com.example.sem6lab6.analytics.AnalyticsService
-import com.example.sem6lab6.data.InMemoryMovieRepository
+import com.example.sem6lab6.analytics.CrashReporter
+import com.example.sem6lab6.domain.repository.MovieRepository
 import com.example.sem6lab6.firebase.RemoteConfigService
 import com.example.sem6lab6.profile.ProfileRepository
 import com.example.sem6lab6.profile.ProfileScreen
@@ -38,8 +39,9 @@ import com.example.sem6lab6.ui.movies.MovieViewModelFactory
 @Composable
 fun AppRootScreen(
     loginViewModel: LoginViewModel,
-    movieRepository: InMemoryMovieRepository,
+    movieRepository: MovieRepository,
     analyticsService: AnalyticsService,
+    crashReporter: CrashReporter,
     remoteConfigService: RemoteConfigService,
     profileRepository: ProfileRepository,
     targetScreen: String
@@ -59,6 +61,7 @@ fun AppRootScreen(
         onLogout = loginViewModel::logout,
         movieRepository = movieRepository,
         analyticsService = analyticsService,
+        crashReporter = crashReporter,
         remoteConfigService = remoteConfigService,
         profileRepository = profileRepository,
         targetScreen = targetScreen
@@ -69,8 +72,9 @@ fun AppRootScreen(
 private fun MainScreen(
     userName: String,
     onLogout: () -> Unit,
-    movieRepository: InMemoryMovieRepository,
+    movieRepository: MovieRepository,
     analyticsService: AnalyticsService,
+    crashReporter: CrashReporter,
     remoteConfigService: RemoteConfigService,
     profileRepository: ProfileRepository,
     targetScreen: String
@@ -79,11 +83,15 @@ private fun MainScreen(
     val movieViewModel: MovieViewModel = viewModel(
         factory = MovieViewModelFactory(
             movieRepository = movieRepository,
-            analyticsService = analyticsService
+            analyticsService = analyticsService,
+            crashReporter = crashReporter
         )
     )
     val profileViewModel: ProfileViewModel = viewModel(
-        factory = ProfileViewModelFactory(profileRepository)
+        factory = ProfileViewModelFactory(
+            profileRepository = profileRepository,
+            crashReporter = crashReporter
+        )
     )
     var selectedTab by remember { mutableIntStateOf(targetScreen.toTabIndex()) }
 
@@ -134,6 +142,12 @@ private fun MainScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Выйти")
+            }
+            Button(
+                onClick = { crashReporter.triggerManualCrash() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Сгенерировать краш")
             }
         }
 

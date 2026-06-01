@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.vk.api.sdk.VK
 import com.example.sem6lab6.firebase.FcmTokenStore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -14,9 +15,14 @@ class Sem6lab6Application : Application() {
     override fun onCreate() {
         super.onCreate()
         VK.initialize(this)
+        initCrashlytics()
         createNotificationChannel()
         loadFcmToken()
         initAppMetrica()
+    }
+
+    private fun initCrashlytics() {
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
     }
 
     private fun initAppMetrica() {

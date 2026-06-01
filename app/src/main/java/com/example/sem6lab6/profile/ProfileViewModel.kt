@@ -2,6 +2,7 @@ package com.example.sem6lab6.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.sem6lab6.analytics.CrashReporter
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -34,6 +36,8 @@ class ProfileViewModel(
                 listenProfile(userId)
             },
             onError = { error ->
+                crashReporter.log("ensureProfile failed for $userName")
+                crashReporter.recordException(error)
                 _uiState.value = ProfileUiState(
                     isLoading = false,
                     errorMessage = error.message ?: "Не удалось загрузить профиль"
@@ -54,6 +58,8 @@ class ProfileViewModel(
                 )
             },
             onError = { error ->
+                crashReporter.log("listenProfile failed for $userId")
+                crashReporter.recordException(error)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = error.message ?: "Ошибка подписки на профиль"
@@ -69,10 +75,14 @@ class ProfileViewModel(
 }
 
 class ProfileViewModelFactory(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val crashReporter: CrashReporter
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return ProfileViewModel(profileRepository) as T
+        return ProfileViewModel(
+            profileRepository = profileRepository,
+            crashReporter = crashReporter
+        ) as T
     }
 }

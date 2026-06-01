@@ -15,5 +15,6 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
-    id("io.appmetrica.analytics") version "1.3.0" apply false
+    alias(libs.plugins.appmetrica.gradle) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
 }

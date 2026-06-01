@@ -18,6 +18,8 @@ appmetricaAnalytics = "7.12.0"
 yandexAuthSdk = "2.5.1"
 vkSdkCore = "4.1.0"
 googleServices = "4.4.2"
+firebaseCrashlyticsGradle = "3.0.3"
+appmetricaGradle = "2.0.1"
 firebaseBom = "33.7.0"
 
 [libraries]
@@ -51,6 +53,7 @@ firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -59,3 +62,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradle" }
+appmetrica-gradle = { id = "io.appmetrica.analytics", version.ref = "appmetricaGradle" }

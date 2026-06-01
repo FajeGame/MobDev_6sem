@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.appmetrica.gradle)
 }
 
 val localProperties = Properties().apply {
@@ -14,6 +16,7 @@ val localProperties = Properties().apply {
     }
 }
 val appMetricaKey = localProperties.getProperty("appMetricaKey", "")
+val appMetricaPostApiKey = localProperties.getProperty("appMetricaPostApiKey", appMetricaKey)
 val yandexClientId = localProperties.getProperty("yandexClientId", "")
 
 android {
@@ -36,12 +39,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            appmetrica {
+                enable.set(false)
+            }
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            appmetrica {
+                enable.set(false)
+            }
         }
     }
     compileOptions {
@@ -75,6 +86,7 @@ dependencies {
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.crashlytics)
     implementation(project(":core"))
     implementation(project(":domain"))
     implementation(project(":data"))
@@ -91,4 +103,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+appmetrica {
+    postApiKey.set(appMetricaPostApiKey)
 }

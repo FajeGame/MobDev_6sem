@@ -16,6 +16,10 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sem6lab6.analytics.AppMetricaAnalyticsService
+import com.example.sem6lab6.analytics.AppMetricaCrashReporter
+import com.example.sem6lab6.analytics.CompositeCrashReporter
+import com.example.sem6lab6.analytics.CrashReporter
+import com.example.sem6lab6.analytics.FirebaseCrashReporter
 import com.example.sem6lab6.auth.DefaultAuthService
 import com.example.sem6lab6.auth.EncryptedAuthSessionStorage
 import com.example.sem6lab6.data.InMemoryMovieRepository
@@ -23,6 +27,7 @@ import com.example.sem6lab6.firebase.FcmTokenStore
 import com.example.sem6lab6.firebase.FirebaseRemoteConfigService
 import com.example.sem6lab6.login.LoginViewModel
 import com.example.sem6lab6.login.LoginViewModelFactory
+import com.example.sem6lab6.movies.CrashReportingMovieRepository
 import com.example.sem6lab6.profile.ProfileRepository
 import com.example.sem6lab6.ui.root.AppRootScreen
 import com.example.sem6lab6.ui.theme.Sem6lab6Theme
@@ -43,18 +48,37 @@ class MainActivity : ComponentActivity() {
         setContent {
             Sem6lab6Theme {
                 val analyticsService = remember { AppMetricaAnalyticsService() }
+                val crashReporter = remember {
+                    CompositeCrashReporter(
+                        listOf(
+                            FirebaseCrashReporter(),
+                            AppMetricaCrashReporter()
+                        )
+                    )
+                }
                 val authService = remember { DefaultAuthService() }
                 val authStorage = remember { EncryptedAuthSessionStorage(this) }
-                val movieRepository = remember { InMemoryMovieRepository() }
+                val movieRepository = remember {
+                    CrashReportingMovieRepository(
+                        delegate = InMemoryMovieRepository(),
+                        crashReporter = crashReporter
+                    )
+                }
                 val tokenStore = remember { FcmTokenStore(this) }
                 val remoteConfigService = remember { FirebaseRemoteConfigService() }
-                val profileRepository = remember { ProfileRepository(tokenStore = tokenStore) }
+                val profileRepository = remember {
+                    ProfileRepository(
+                        tokenStore = tokenStore,
+                        crashReporter = crashReporter
+                    )
+                }
 
                 val loginViewModel: LoginViewModel = viewModel(
                     factory = LoginViewModelFactory(
                         authService = authService,
                         authSessionStorage = authStorage,
-                        analyticsService = analyticsService
+                        analyticsService = analyticsService,
+                        crashReporter = crashReporter
                     )
                 )
 
@@ -62,6 +86,7 @@ class MainActivity : ComponentActivity() {
                     loginViewModel = loginViewModel,
                     movieRepository = movieRepository,
                     analyticsService = analyticsService,
+                    crashReporter = crashReporter,
                     remoteConfigService = remoteConfigService,
                     profileRepository = profileRepository,
                     targetScreen = targetScreen

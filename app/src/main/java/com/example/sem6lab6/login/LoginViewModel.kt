@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.sem6lab6.analytics.AnalyticsService
+import com.example.sem6lab6.analytics.CrashReporter
 import com.example.sem6lab6.auth.AuthProvider
 import com.example.sem6lab6.auth.AuthService
 import com.example.sem6lab6.auth.AuthSession
@@ -26,7 +27,8 @@ data class LoginUiState(
 class LoginViewModel(
     private val authService: AuthService,
     private val authSessionStorage: AuthSessionStorage,
-    private val analyticsService: AnalyticsService
+    private val analyticsService: AnalyticsService,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -71,12 +73,18 @@ class LoginViewModel(
     }
 
     private fun restoreSession() {
-        val session = authSessionStorage.getSession()
-        if (session != null && session.isValid()) {
-            _uiState.value = LoginUiState(
-                isAuthenticated = true,
-                userName = session.userName
-            )
+        try {
+            val session = authSessionStorage.getSession()
+            if (session != null && session.isValid()) {
+                _uiState.value = LoginUiState(
+                    isAuthenticated = true,
+                    userName = session.userName
+                )
+            }
+        } catch (error: Exception) {
+            crashReporter.log("restoreSession failed")
+            crashReporter.recordException(error)
+            authSessionStorage.clear()
         }
     }
 
@@ -97,6 +105,8 @@ class LoginViewModel(
         result.onSuccess { session ->
             onAuthSuccess(session)
         }.onFailure { error ->
+            crashReporter.log("login_failed_${provider.id}")
+            crashReporter.recordException(error)
             analyticsService.trackError("login_failed_${provider.id}", error)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
@@ -113,14 +123,16 @@ class LoginViewModel(
 class LoginViewModelFactory(
     private val authService: AuthService,
     private val authSessionStorage: AuthSessionStorage,
-    private val analyticsService: AnalyticsService
+    private val analyticsService: AnalyticsService,
+    private val crashReporter: CrashReporter
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
         return LoginViewModel(
             authService = authService,
             authSessionStorage = authSessionStorage,
-            analyticsService = analyticsService
+            analyticsService = analyticsService,
+            crashReporter = crashReporter
         ) as T
     }
 }
