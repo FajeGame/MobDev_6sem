@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Filmi from Nikitka</string>
+    <string name="default_notification_channel_id">filmi_push_channel</string>
+</resources>

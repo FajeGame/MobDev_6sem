@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432938805615",
+    "project_id": "bigpencils",
+    "storage_bucket": "bigpencils.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432938805615:android:d057403dfa067fa53a609a",
+        "android_client_info": {
+          "package_name": "com.example.sem6lab6"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArBYT_Lzw9byx_7bIVq26A5Hzi_0woMK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
