@@ -87,14 +87,6 @@ APK для Releases: см. папку `releases/`.
 
 Зависимости направлены внутрь: `app` → `data` → `domain`.
 
-## Устная защита (кратко)
-
-1. Запустить **demo** — показать 3 привычки, отметить, streak.
-2. Настройки — flavor URL, переключатель уведомлений, Яндекс → Firestore.
-3. Добавить привычку с фото (ML Kit).
-4. Logcat / App Inspection — WorkManager `habit_daily_reminder`.
-5. Показать `activity_settings.xml` с `ComposeView` в IDE.
-
 ## Автор
 
-Семестровая работа, 6 семестр.
+Слесарев Никита ФИТ-231
