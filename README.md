@@ -5,8 +5,6 @@
 
 ## Скриншоты
 
-Добавьте PNG в `docs/screenshots/` (см. `docs/screenshots/README.md`):
-
 | Файл | Экран |
 |------|--------|
 | `01_list.png` | Список привычек |
